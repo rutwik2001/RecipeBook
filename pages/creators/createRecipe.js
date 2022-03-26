@@ -12,7 +12,7 @@ import {Router} from '../../routes'
 
 
 export const getServerSideProps = async ({query}) => {    
-  const res = await fetch(`http://localhost:3000/api/getPosts`) 
+  const res = await fetch(`https://recipe-book-8w1riovrg-rutwik2001.vercel.app/api/getPosts`) 
   const postCount = await res.json()
   
   return {
@@ -81,7 +81,7 @@ class CreateRecipe extends React.Component {
             count = count + 1;
             const likes = 0
             const body = { likes, count }
-            await fetch(`http://localhost:3000/api/newRecipe`, {
+            await fetch(`https://recipe-book-8w1riovrg-rutwik2001.vercel.app/api/newRecipe`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),
