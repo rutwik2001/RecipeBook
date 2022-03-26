@@ -1,0 +1,36 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["mongoDb"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Creator {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  Address String @unique
+  Email   String
+  Name    String
+  NumID   Int
+  Phone   String
+}
+
+model creator {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  address String @unique
+  email   String
+  name    String
+  numid   Int
+  phone   String
+}
+
+model likes {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  likedBy Int[]
+  /// Multiple data types found: Int32: 50%, Int64: 50% out of 2 sampled entries
+  likes   Json
+  /// Multiple data types found: Int32: 50%, Int64: 50% out of 2 sampled entries
+  tokenID Json
+}
