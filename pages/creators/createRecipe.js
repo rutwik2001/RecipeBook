@@ -5,14 +5,9 @@ import ipfs from '../../ipfs';
 import { ethers } from "ethers";
 import RecipeABI from '../../ethereum/build/RecipeABI.json'
 import {Router} from '../../routes'
-import Editor from "../../components/Editor";
 
-import dynamic from 'next/dynamic'
 
-const QuillNoSSRWrapper = dynamic(import('react-quill'), {
-  ssr: false,
-  loading: () => <p>Loading ...</p>,
-})
+
 
 
 
