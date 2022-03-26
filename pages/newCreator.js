@@ -32,7 +32,7 @@ class Creator extends Component{
                 const email = this.state.email
                 const phone = this.state.phone_number
                 const body = { name, address, email, phone }
-                await fetch(`http://localhost:3000/api/addCreator`, {
+                await fetch(`https://recipe-book-8w1riovrg-rutwik2001.vercel.app/api/addCreator`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),
