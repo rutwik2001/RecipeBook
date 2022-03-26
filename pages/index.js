@@ -117,14 +117,15 @@ class Creator extends Component{
         <h2>{this.state.accountAddress}</h2>
       </Grid.Column>
       <Grid.Column textAlign="right">
-         <Link route={`/connect`}><a><Button primary>Connect Wallet</Button></a></Link>
+        
       </Grid.Column>
     </Grid.Row>
     </Grid>
     <br/>
     <br/>
     
-    
+     <Link route={`/creators/${this.state.accountAddress}`}><a><Button primary>Profile</Button></a></Link>
+       <Link route={`/creators/${this.state.accountAddress}/createRecipe`}><a><Button primary>Create Recipe</Button></a></Link>
     <h1>Recipes</h1>
      
     <br/>
