@@ -28,7 +28,7 @@ export const getServerSideProps = async ({query}) => {
             recipes1.push(parseInt(recipes[i]._hex, 16))
         }
     
-  const res = await fetch(`http://localhost:3000/api/getCreator?address=${address}`) 
+  const res = await fetch(`https://recipe-book-8w1riovrg-rutwik2001.vercel.app/api/getCreator?address=${address}`) 
   const creator = await res.json()
   
     const names = []
