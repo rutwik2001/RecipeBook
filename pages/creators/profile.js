@@ -11,41 +11,61 @@ import RecipeABI from '../../ethereum/build/RecipeABI.json'
 export const getServerSideProps = async ({query}) => {
 
     const address = query.address;
-  
-    
 
-    const provider = ethers.getDefaultProvider("goerli", {
+        let hasRecipe = false;
+        let isCreator = false; 
+        const res = await fetch(`http://localhost:3000/api/getCreator?address=${address}`) 
+        const creator = await res.json();
+        
+    if(creator.length !== 0){
+        isCreator = true;
+        
+             const provider = ethers.getDefaultProvider("goerli", {
       infura: {
         projectId: '32881d7ec0eb4a199983753af133d054',
         projectSecret: "3b8bd5da960740b1baeba314a8a5677f",
       }});
+    const contract_address = "0x6a17D2fCe4c7a0297BC5e26E5784310c6181fe9e"
+    const contract = new ethers.Contract(contract_address, RecipeABI, provider);
+    const recipes = await contract.getCreatorRecepies(address);
     
-        const contract_address = "0x6a17D2fCe4c7a0297BC5e26E5784310c6181fe9e"
-        const contract = new ethers.Contract(contract_address, RecipeABI, provider);
-        const recipes = await contract.getCreatorRecepies(address);
-        const recipes1 = []
-        for (var i = 0; i < recipes.length; i++) {
-            recipes1.push(parseInt(recipes[i]._hex, 16))
-        }
+    const recipes1 = []
+    for (var i = 0; i < recipes.length; i++) {
+        recipes1.push(parseInt(recipes[i]._hex, 16))
+    }
     
-  const res = await fetch(`https://recipe-book-8w1riovrg-rutwik2001.vercel.app/api/getCreator?address=${address}`) 
-  const creator = await res.json()
-  
-    const names = []
-  for (var i = 0; i< recipes1.length; i++) {
+        const names = []
+    
+        for (var i = 0; i< recipes1.length; i++) {
         let cid = await contract.tokenURI(recipes1[i]);
-        
-            cid = cid.slice(1, -1)
+        cid = cid.slice(1, -1)
         var url = "https://ipfs.io/ipfs/" + cid
         var resp = await fetch(url)
         var data = await resp.json()
-        names.push(data);
+        names.push(data);       
   }
+  if(recipes.length>0){
+    hasRecipe = true;
+  }
+  
+   return {
+    props: { creator, address, recipes1, names, hasRecipe, isCreator },
+  }
+        } else{
+            isCreator = false;
+            hasRecipe = false;
 
-   
-  return {
-    props: { creator, address, recipes1, names },
+            return {
+    props: { hasRecipe, isCreator }
   }
+        }
+       
+    
+
+    
+    
+   
+  
 }
 
 class CampaignMain extends Component {
@@ -108,7 +128,7 @@ class CampaignMain extends Component {
             names
         } = this.props;
 
-        console.log(names)
+        
 
 
 
@@ -135,22 +155,25 @@ class CampaignMain extends Component {
             <Layout>
                 
         <h1>Creator Details</h1>
-        <h1>{this.props.creator.Name}</h1>
+        
         
         <br/>
-        <Grid>
+        {this.props.isCreator? <div><Grid>
             <Grid.Row>
     <Grid.Column>
         {this.Card()}
     </Grid.Column>
     </Grid.Row>
     
-    </Grid>
+    </Grid></div>:<div><h1>No Creator Found</h1>
+    <Link route={`/newCreator`}><a><Button primary>Create a Profile</Button></a></Link>
+    </div>}
+        
 
     
         <br/>
         <br/>
-        <Grid>
+        {this.props.hasRecipe? <div><Grid>
             <Grid.Row>
     <Grid.Column>
         
@@ -159,7 +182,8 @@ class CampaignMain extends Component {
     </Grid.Column>
     </Grid.Row>
     
-    </Grid>
+    </Grid></div>: <div>No Recipes</div>}
+        
     
 
       
