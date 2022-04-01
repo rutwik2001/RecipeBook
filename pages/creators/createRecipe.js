@@ -5,24 +5,23 @@ import ipfs from '../../ipfs';
 import { ethers } from "ethers";
 import RecipeABI from '../../ethereum/build/RecipeABI.json'
 import {Router} from '../../routes'
-
-
-
-
-
-
-export const getServerSideProps = async ({query}) => {    
-  const res = await fetch(`https://recipe-book-8w1riovrg-rutwik2001.vercel.app/api/getPosts`) 
-  const postCount = await res.json()
-  
-  return {
-    props: { postCount },
-  }
-}
-
+import {Link} from '../../routes';
 
 
 class CreateRecipe extends React.Component {
+    static async getInitialProps({query}){
+        const address = query.address;
+        const res = await fetch(`http://localhost:3000/api/getCreator?address=${address}`) 
+        const creator = await res.json();
+        
+        let isCreator;
+        if(creator.length !== 0){
+            isCreator = true;
+        } else {
+            isCreator = false;
+        }
+        return {address, isCreator};
+    }
     
     state = {
         nameOfRecipe: '',
@@ -31,34 +30,32 @@ class CreateRecipe extends React.Component {
         cookingSteps: '',
         ingredients: '',
         errorMessage: '',
-        editorLoaded: true,
-        setEditorLoaded: true,
-        data: "",
-        setData: ""
+        isCreator: false
     };
 
 
     onSubmit = async (event) => {
         event.preventDefault();
         
+        
+        
 
-        this.setState({loading: true, errorMessage: ''});
+        
+            this.setState({loading: true, errorMessage: ''});
         
         try{
-            
 
-            const provider = new ethers.providers.Web3Provider(window.ethereum)
-            await provider.send("eth_requestAccounts", []);
-            const signer = provider.getSigner()
-            const account = await signer.getAddress()
+            if(window.ethereum !== undefined){
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      await provider.send("eth_requestAccounts", []); 
+      const signer = provider.getSigner()
+      const account = await signer.getAddress()
+      this.setState({
+      accountAddress: account
+    });
 
-            const contract_address = "0x6a17D2fCe4c7a0297BC5e26E5784310c6181fe9e"
+    const contract_address = "0x6a17D2fCe4c7a0297BC5e26E5784310c6181fe9e"
             const contract = new ethers.Contract(contract_address, RecipeABI, signer);
-      
-
-
-
-
             const recipe = {
                 "name": `${this.state.nameOfRecipe}`,
                 "prepTime": `${this.state.prepTime}`,
@@ -69,45 +66,46 @@ class CreateRecipe extends React.Component {
             recipe = JSON.stringify(recipe)
             const cid = await ipfs.add(recipe);
             cid = cid.path
-            
-
-
             cid = JSON.stringify(cid);
             
-
-            await contract.createRecipie(account, cid)
             const tokenID = await contract.gettokenIDs()
+            await contract.createRecipie(account, cid)
             var count = parseInt(tokenID._hex, 16)
             count = count + 1;
             const likes = 0
             const body = { likes, count }
-            await fetch(`https://recipe-book-8w1riovrg-rutwik2001.vercel.app/api/newRecipe`, {
+            await fetch(`http://localhost:3000/api/newRecipe`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),
                 })
                 Router.push(`/creators/${account}`)
                 this.setState({loading: false});
-        
+    
+    } else{
+      alert("Please install Metamask");
+    }
         } catch (err) {
             this.setState({errorMessage: err.message});
         }
+
+        
+
+        
     }
 
-    handleChange(value) {
-    this.setState({ text: value })
-  }
+    
 
     render() {
         return(
     <Layout>
        
       
-        <h1>Create Recipe</h1>
+        
 
-         
-
-    <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>
+        {this.props.isCreator? <div>
+            <h1>Create Recipe</h1>
+            <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>
         <b>Name of the recipe</b>
     <Form.Field>
       <Input
@@ -142,6 +140,12 @@ class CreateRecipe extends React.Component {
     </Form.Field>
     <Button primary type='submit'>Submit</Button>
   </Form>
+        </div>: <div><h1>No creator found</h1>
+        <Link route={`/newCreator`}><a><Button primary>Create a Profile</Button></a></Link></div>}
+
+         
+
+    
 
   <h1>{this.state.errorMessage}</h1>
   <h1>{this.state.cid}</h1>
