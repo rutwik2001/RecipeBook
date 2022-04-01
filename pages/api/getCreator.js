@@ -4,7 +4,7 @@ import prisma from '../../lib/prisma'
 export default async function handle(req, res) {
   const address = req.query.address
   
-  try {
+
 
   
   var creator = await prisma.Creator.findMany({
@@ -13,10 +13,13 @@ export default async function handle(req, res) {
   }
 })
 
-} catch (err) {
+if(creator == null){
+  creator = [{}]
+} 
+
+
+
+
+res.json(creator)
   
-}
-
-
-  res.json(creator)
 }
