@@ -22,8 +22,6 @@ class Creator extends Component{
         try {
 
             if(window.ethereum !== undefined){
-                const provider = new ethers.providers.Web3Provider(window.ethereum)
-                await provider.send("eth_requestAccounts", []);
                 const signer = provider.getSigner()
                 const account = await signer.getAddress()
                 this.setState({address: account})
@@ -32,27 +30,21 @@ class Creator extends Component{
                 const email = this.state.email
                 const phone = this.state.phone_number
                 const body = { name, address, email, phone }
-                await fetch(`https://recipe-book-8w1riovrg-rutwik2001.vercel.app/api/addCreator`, {
+                await fetch(`http://localhost:3000/api/addCreator`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),
                 })
             }
             else{
-                console.log("Please install MetaMask");
+                alert("Please install MetaMask");
             }
-
-            
-
-
-            
             
         } catch ( err ) {
       
             this.setState({errorMessage: err.message});
         }
-        
-        
+ 
     }
 
     render() {
