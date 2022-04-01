@@ -5,24 +5,19 @@ import {Link} from '../routes';
 import Layout from '../components/Layout'
 import RecipeABI from '../ethereum/build/RecipeABI.json'
 
+
+
 export const getServerSideProps = async ({query}) => {
-
-    
-  
-    
-
-    const provider = ethers.getDefaultProvider("goerli", {
+  const provider = ethers.getDefaultProvider("goerli", {
       infura: {
         projectId: '32881d7ec0eb4a199983753af133d054',
         projectSecret: "3b8bd5da960740b1baeba314a8a5677f",
       }});
-    
-        const contract_address = "0x6a17D2fCe4c7a0297BC5e26E5784310c6181fe9e"
-        const contract = new ethers.Contract(contract_address, RecipeABI, provider);
-        const tokenID = await contract.gettokenIDs()
+       const contract_address = "0x6a17D2fCe4c7a0297BC5e26E5784310c6181fe9e"
+    const contract = new ethers.Contract(contract_address, RecipeABI, provider);
+      
+      const tokenID = await contract.gettokenIDs()
       var count = parseInt(tokenID._hex, 16);
-        
-    
   
     const names = []
   for (var i = 1; i<= count; i++) {
@@ -31,18 +26,13 @@ export const getServerSideProps = async ({query}) => {
         var url = "https://ipfs.io/ipfs/" + cid
         var resp = await fetch(url)
         var data = await resp.json()
-        
         names.push(data);
   }
 
-  
-
-   
   return {
-    props: {  names, count,  },
+    props: {  names, count },
   }
 }
-
 
 class Creator extends Component{
     state = {
@@ -52,30 +42,24 @@ class Creator extends Component{
 
 
   async componentDidMount() {
+    let provider;
+
     if(window.ethereum !== undefined){
-      const provider = new ethers.providers.Web3Provider(window.ethereum)
-      await provider.send("eth_requestAccounts", []);
+      provider = new ethers.providers.Web3Provider(window.ethereum)
+      await provider.send("eth_requestAccounts", []); 
       const signer = provider.getSigner()
       const account = await signer.getAddress()
       this.setState({
       accountAddress: account
     });
-    const contract_address = "0x6a17D2fCe4c7a0297BC5e26E5784310c6181fe9e"
-    const contract = new ethers.Contract(contract_address, RecipeABI, signer);
-
     
     } else{
-    
-      const provider = ethers.getDefaultProvider("goerli", {
+      provider = ethers.getDefaultProvider("goerli", {
       infura: {
         projectId: '32881d7ec0eb4a199983753af133d054',
         projectSecret: "3b8bd5da960740b1baeba314a8a5677f",
       }});
-      const contract_address = "0x6a17D2fCe4c7a0297BC5e26E5784310c6181fe9e"
-      const contract = new ethers.Contract(contract_address, RecipeABI, provider);
-
-}
-
+    }
 
   }  
 
@@ -87,10 +71,6 @@ class Creator extends Component{
             count,
             names
         } = this.props;
-
-        
-
-
 
         var items = []
 
@@ -124,8 +104,17 @@ class Creator extends Component{
     <br/>
     <br/>
     
-     <Link route={`/creators/${this.state.accountAddress}`}><a><Button primary>Profile</Button></a></Link>
-       <Link route={`/creators/${this.state.accountAddress}/createRecipe`}><a><Button primary>Create Recipe</Button></a></Link>
+     
+     {this.state.accountAddress.length > 0
+        ? <div>
+          <Link route={`/creators/${this.state.accountAddress}`}><a><Button primary>Profile</Button></a></Link>
+          <Link route={`/creators/${this.state.accountAddress}/createRecipe`}><a><Button primary>Create Recipe</Button></a></Link>
+        </div>
+        : <div>
+          <Link route={`/creators/${this.state.accountAddress}`}><a><Button primary>Profile</Button></a></Link>
+          </div>
+      }
+       
     <h1>Recipes</h1>
      
     <br/>
