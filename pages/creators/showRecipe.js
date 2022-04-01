@@ -9,6 +9,7 @@ class ShowRecipe extends React.Component {
     static async getInitialProps({query}){
         const tokenID = query.tokenID;
 
+        
         const provider = ethers.getDefaultProvider("goerli", {
       infura: {
         projectId: '32881d7ec0eb4a199983753af133d054',
