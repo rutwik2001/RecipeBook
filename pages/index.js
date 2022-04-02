@@ -10,8 +10,8 @@ import RecipeABI from '../ethereum/build/RecipeABI.json'
 export const getServerSideProps = async ({query}) => {
   const provider = ethers.getDefaultProvider("goerli", {
       infura: {
-        projectId: '32881d7ec0eb4a199983753af133d054',
-        projectSecret: "3b8bd5da960740b1baeba314a8a5677f",
+        projectId: '2091ae5e532549eca5e266c98f937e47',
+        projectSecret: "6a6684ed1060438ea8c2f3dbd48fc33c",
       }});
        const contract_address = "0x6a17D2fCe4c7a0297BC5e26E5784310c6181fe9e"
     const contract = new ethers.Contract(contract_address, RecipeABI, provider);
