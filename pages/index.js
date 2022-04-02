@@ -111,7 +111,7 @@ class Creator extends Component{
           <Link route={`/creators/${this.state.accountAddress}/createRecipe`}><a><Button primary>Create Recipe</Button></a></Link>
         </div>
         : <div>
-          <Link route={`/creators/${this.state.accountAddress}`}><a><Button primary>Profile</Button></a></Link>
+          <Link route={`/newCreator`}><a><Button primary>New Creator</Button></a></Link>
           </div>
       }
        
